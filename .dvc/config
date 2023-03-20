@@ -1,0 +1,12 @@
+[core]
+    remote = model-tracker
+['remote "bikes"']
+    url = s3://storage-manager-aazg
+['remote "storage"']
+    url = s3://model-dataset-tracker-cursemlops
+['remote "dataset-track"']
+    url = s3://model-dataset-tracker-cursemlops/dataset
+['remote "model-track"']
+    url = s3://model-dataset-tracker-cursemlops/model
+['remote "model-tracker"']
+    url = s3://model-dataset-tracker-cursemlops/model
