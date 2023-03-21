@@ -3,3 +3,6 @@
 *.pkl
 ven/
 .ipynb_checkpoints/
+*.txt
+*.png
+__pycache__/
