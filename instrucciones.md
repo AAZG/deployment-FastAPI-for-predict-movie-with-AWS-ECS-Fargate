@@ -1,4 +1,6 @@
 # Pasos para DVC
+https://iterative.ai/blog/aws-remotes-in-dvc/  # aguide add remote to AWS s3
+
 pyenv install 3.9.15 #using pyenv for install varias vertions of python in your ubuntu with WSL2
 makeproject (your name enviroments) --python (your version python) #using pipenvwrapper for create y managements for multics enviroments
 useenv (select your enviroments create previus)

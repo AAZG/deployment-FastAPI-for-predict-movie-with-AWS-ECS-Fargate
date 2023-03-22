@@ -56,7 +56,7 @@ y = data_scaled['worldwide_gross']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
 
 logger.info('Setting Hyperparameter to tune')
-param_tuning = {'core_model__n_estimators':range(160, 260, 5),
+param_tuning = {'core_model__n_estimators': range(160, 260, 5),
                 'core_model__criterion': ['friedman_mse'],
                 'core_model__learning_rate': [0.15, 0.017, 0.2],
                 'core_model__loss': ['huber'],
