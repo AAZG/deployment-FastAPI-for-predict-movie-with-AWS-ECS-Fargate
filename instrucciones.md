@@ -27,10 +27,11 @@ dvc push model/model.pkl -r model-track
 
 
 # Ramas creadas
+git branch
 git checkout -b model-revision
 git checkout -b implementating_dvc
 git checkout -b continuous_training_pipeline
-
+git checkout -b testing_api
 
 # Install
 pip install -r requirements.txt
@@ -46,3 +47,11 @@ dvc run -n training -d dataset/full_data.csv python src/train.py
 
 dvc repro
 dvc dag
+
+
+# correr servidor de uvicorn
+uvicorn api.main:app
+
+# hacer pruebas con pytest
+pytest tests/tests_api.py
+Aqui pidio: instalar pip install httpx, luego corri la linea anterior y funciono
