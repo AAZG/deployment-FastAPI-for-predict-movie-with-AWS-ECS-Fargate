@@ -55,3 +55,8 @@ uvicorn api.main:app
 # hacer pruebas con pytest
 pytest tests/tests_api.py
 Aqui pidio: instalar pip install httpx, luego corri la linea anterior y funciono
+
+
+# crear dockerfile
+DOCKER_BUILDKIT=1 docker build . -t model-api:v1
+docker run -p 8000:8000 model-api:v1
