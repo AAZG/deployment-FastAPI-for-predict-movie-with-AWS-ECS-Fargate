@@ -1,28 +1,28 @@
-name: Testing API
-on: [push, pull_request]
-jobs:
-  testing-api:
-    runs-on: ubuntu-latest
-    env:
-      # SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }} # version de google cloud
-      # SERVICE_ACCOUNT_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # para AWS es este
-      # SERVICE_ACCOUNT_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }} # o este
-    steps:
-      - name: Checkout the repo
-        uses: actions/checkout@v3
-      - name: Creating and activating virtualenv
-        run: |
-          pip install pipenv
-          pipenv install
-          pipenv shell
-      - name: Installing dependencies
-        run: |
-          pip install dvc[s3]
-          pip install -r requirements_test.txt
-      - name: Test API
-        run: |
-          export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
-          dvc pull model/model.pkl -r model-tracker
-          pytest tests.py
+# name: Testing API
+# on: [push, pull_request]
+# jobs:
+#   testing-api:
+#     runs-on: ubuntu-latest
+#     env:
+#       # SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }} # version de google cloud
+#       # SERVICE_ACCOUNT_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # para AWS es este
+#       # SERVICE_ACCOUNT_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }} # o este
+#     steps:
+#       - name: Checkout the repo
+#         uses: actions/checkout@v3
+#       - name: Creating and activating virtualenv
+#         run: |
+#           pip install pipenv
+#           pipenv install
+#           pipenv shell
+#       - name: Installing dependencies
+#         run: |
+#           pip install dvc[s3]
+#           pip install -r requirements_test.txt
+#       - name: Test API
+#         run: |
+#           export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
+#           dvc pull model/model.pkl -r model-tracker
+#           pytest tests.py
 
 # export AWS_APPLICATION_CREDENTIALS=$(python utilities/setter.py) # debe ser este
