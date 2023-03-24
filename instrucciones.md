@@ -32,6 +32,9 @@ git checkout -b model-revision
 git checkout -b implementating_dvc
 git checkout -b continuous_training_pipeline
 git checkout -b testing_api
+git checkout -b creating_dockerfile
+git checkout -b workflow_testing_api
+
 
 # Install
 pip install -r requirements.txt
