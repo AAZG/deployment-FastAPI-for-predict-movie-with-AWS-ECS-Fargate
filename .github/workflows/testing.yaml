@@ -23,7 +23,7 @@ jobs:
         run: |
           echo ${{ secrets.ENV_SECRET }} | base64 -d > .env
           pip install python-dotenv
-          python load_dotenv.py    
+          python utilities/load_dotenv.py    
       - name: Test API
         run: |
           dvc pull model/model.pkl -r model-tracker
