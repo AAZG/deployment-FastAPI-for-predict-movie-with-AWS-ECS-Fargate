@@ -36,22 +36,4 @@ jobs:
       - name: Test API
         run: |
           dvc pull model/model.pkl -r model-tracker
-          pytest tests.py
-
-
-# jobs:
-#   sync:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Repo
-#         uses: actions/checkout@v2
-     
-#       - name: Connect to AWS
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           role-session-name: awssyncsession
-#           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-#           aws-region: ${{ secrets.AWS_REGION }}
-     
-#       - name: sync bucket
-#         run: aws s3 sync ./files/ s3://${{ secrets.AWS_BUCKET_NAME }} --delete
+          pytest tests/tests_api.py
