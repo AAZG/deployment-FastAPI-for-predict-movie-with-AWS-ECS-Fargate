@@ -23,12 +23,13 @@ jobs:
         # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Set AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: echo AWS_ACCESS_KEY_ID | base64 -d
-          aws-secret-access-key: echo AWS_SECRET_ACCESS_KEY | base64 -d
-          aws-region: us-east-2
+        # uses: aws-actions/configure-aws-credentials@v2
+        # with:
+        #   aws-access-key-id: echo AWS_ACCESS_KEY_ID | base64 -d
+        #   aws-secret-access-key: echo AWS_SECRET_ACCESS_KEY | base64 -d
+        #   aws-region: us-east-2
       - name: Test API
         run: |
+          aws configure $(python utilities/setter_key.py)
           dvc pull model/model.pkl -r model-tracker
           pytest tests.py
