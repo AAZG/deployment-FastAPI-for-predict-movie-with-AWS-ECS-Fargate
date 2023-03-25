@@ -13,7 +13,6 @@ jobs:
     permissions:
       id-token: write # need this for OIDC  
       contents: read
-    name: Definiendo variables de entorno
     env:
       AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
