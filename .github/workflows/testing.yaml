@@ -1,11 +1,9 @@
 name: Testing API
-
 on:
   push:
     branches: [workflow_testing_api]
   pull_request:
     branches: [workflow_testing_api]
-
 jobs:
   testing-api:
     name: Testing-api in Github Actions
@@ -14,6 +12,9 @@ jobs:
     permissions:
       id-token: write # need this for OIDC  
       contents: read
+    env:
+      AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
@@ -29,8 +30,9 @@ jobs:
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.AWS_IAM_ROLE || github.token }}
-          aws-region: ${{ secrets.AWS_REGION || github.token }}
+          role-session-name: awstestingsession
+          role-to-assume: AWS_IAM_ROLE
+          aws-region: AWS_REGION
       - name: Test API
         run: |
           dvc pull model/model.pkl -r model-tracker
