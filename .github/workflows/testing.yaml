@@ -17,18 +17,19 @@ jobs:
         run: |
           pip install dvc[s3]
           pip install -r requirements_test.txt
+      - name: Set env as secret
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: echo ${{ secrets.AWS_ACCESS_KEY_ID }} | base64 -d
-          aws-secret-access-key: echo ${{ secrets.AWS_SECRET_ACCESS_KEY }} | base64 -d
+          aws-access-key-id: $(python utilities/setter_id.py)
+          aws-secret-access-key: $(python utilities/setter_key.py)
           aws-region: eu-west-1
       - name: Test API
         run: |
           dvc pull model/model.pkl -r model-tracker
           pytest tests.py
 
-      # - name: Install Python, pipenv and Pipfile packages
-      #   uses: palewire/install-python-pipenv-pipfile@v2
-      #   with:
-      #     python-version: 3.10.0
+
+      export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
