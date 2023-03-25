@@ -21,6 +21,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Creating and activating virtualenv
         run: |
+          export AWS_IAM_ROLE=$(python utilities/setter_role.py)
+          export AWS_REGION=$(python utilities/setter_region.py)
           pip install pipenv
           pipenv install
           pipenv run python
@@ -28,8 +30,6 @@ jobs:
         run: |
           pip install dvc[s3]
           pip install -r requirements_test.txt
-          export AWS_IAM_ROLE=$(python utilities/setter_role.py)
-          export AWS_REGION=$(python utilities/setter_region.py)
       - name: echo
         run: |
           echo $AWS_REGION
