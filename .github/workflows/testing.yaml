@@ -1,12 +1,12 @@
 name: Testing API
 on: [push, pull_request]
+
+permissions:
+  id-token: write
+  contents: read
 jobs:
   testing-api:
     runs-on: ubuntu-latest
-    # env:
-    #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #   SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }} # variable que definimos dentro de Dependabot secrets in secrets and variables in repository
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
@@ -19,17 +19,12 @@ jobs:
         run: |
           pip install dvc[s3]
           pip install -r requirements_test.txt
-      - name: Set environment variables secret
-        run: |
-          echo ${{ secrets.ENV_SECRET }} | base64 -d > .env
-          pip install python-dotenv
-          python utilities/load_dotenv.py   
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${AWS_ACCESS_KEY_ID}
-          aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-          aws-region: us-east-2
+          role-session-name: aws_testing_session
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: Test API
         run: |
           aws configure list
@@ -38,10 +33,19 @@ jobs:
 
 
 
-      # - name: Set AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v2
-      #   with:
-      #     role-to-assume:
-      #     aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-2
+# jobs:
+#   sync:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Repo
+#         uses: actions/checkout@v2
+     
+#       - name: Connect to AWS
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           role-session-name: awssyncsession
+#           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+#           aws-region: ${{ secrets.AWS_REGION }}
+     
+#       - name: sync bucket
+#         run: aws s3 sync ./files/ s3://${{ secrets.AWS_BUCKET_NAME }} --delete

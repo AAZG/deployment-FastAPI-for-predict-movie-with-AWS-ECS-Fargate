@@ -68,3 +68,7 @@ docker run -p 8000:8000 model-api:v1
 # Push al repositorio
 git push origin workflow_testing_api
 git push --all origin
+
+
+# Crear IAM roles en AWS para los repositorios
+https://www.youtube.com/watch?v=HEOU6o-Eazs
