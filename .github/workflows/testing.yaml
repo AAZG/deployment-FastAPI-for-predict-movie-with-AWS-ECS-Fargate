@@ -1,5 +1,10 @@
 name: Testing API
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [workflow_testing_api]
+  pull_request:
+    branches: [workflow_testing_api]
 
 jobs:
   testing-api:
@@ -22,7 +27,7 @@ jobs:
           pip install dvc[s3]
           pip install -r requirements_test.txt
       - name: Set AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}
