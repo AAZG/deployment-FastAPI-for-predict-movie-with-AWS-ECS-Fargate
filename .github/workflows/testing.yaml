@@ -19,7 +19,7 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v3
       - name: Set AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-session-name: aws_testing_session
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
@@ -33,8 +33,6 @@ jobs:
         run: |
           pip install dvc[s3]
           pip install -r requirements_test.txt
-      # Recomendacion para usar variables de entorno en memoria:
-      # https://securitylab.github.com/research/github-actions-untrusted-input/#:~:text=variable%20de%20entorno-,intermedia,-%3A
       - name: Test API
         run: |
           dvc pull model/model.pkl -r model-tracker
