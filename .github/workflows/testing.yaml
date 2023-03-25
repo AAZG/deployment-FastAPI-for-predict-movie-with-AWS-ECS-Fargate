@@ -23,7 +23,7 @@ jobs:
         with:
           role-session-name: aws_testing_session
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-2
       - name: Creating and activating pipenv
         run: |
           pip install pipenv
