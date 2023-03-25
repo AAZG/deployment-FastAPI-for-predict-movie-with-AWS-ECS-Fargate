@@ -34,8 +34,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-session-name: awstestingsession
-          role-to-assume: '$AWS_IAM_ROLE'
-          aws-region: '$AWS_REGION'
+          role-to-assume: $AWS_IAM_ROLE
+          aws-region: $AWS_REGION
       - name: Test API
         run: |
           dvc pull model/model.pkl -r model-tracker
