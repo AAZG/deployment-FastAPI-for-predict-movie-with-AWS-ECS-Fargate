@@ -6,3 +6,5 @@ ven/
 report.txt
 *.png
 __pycache__/
+.env.testing
+*.env
