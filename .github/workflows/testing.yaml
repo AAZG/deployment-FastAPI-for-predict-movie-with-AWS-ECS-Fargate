@@ -23,9 +23,15 @@ jobs:
         run: |
           echo ${{ secrets.ENV_SECRET }} | base64 -d > .env
           pip install python-dotenv
-          python utilities/load_dotenv.py    
+          python utilities/load_dotenv.py   
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${AWS_ACCESS_KEY_ID}
+          aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
       - name: Test API
         run: |
+          aws configure list
           dvc pull model/model.pkl -r model-tracker
           pytest tests.py
 
