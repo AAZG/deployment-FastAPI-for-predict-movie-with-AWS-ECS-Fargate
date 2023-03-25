@@ -13,6 +13,10 @@ jobs:
     permissions:
       id-token: write # need this for OIDC  
       contents: read
+    name: Definiendo variables de entorno
+    env:
+      AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
@@ -27,10 +31,6 @@ jobs:
           pip install -r requirements_test.txt
       # Recomendacion para usar variables de entorno en memoria:
       # https://securitylab.github.com/research/github-actions-untrusted-input/#:~:text=variable%20de%20entorno-,intermedia,-%3A
-      - name: Definiendo variables de entorno
-        env:
-          AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
