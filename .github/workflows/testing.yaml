@@ -20,7 +20,7 @@ jobs:
           pip install dvc[s3]
           pip install -r requirements_test.txt
       - name: Set AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           role-session-name: aws_testing_session
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
