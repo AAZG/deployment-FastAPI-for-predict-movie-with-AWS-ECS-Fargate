@@ -30,6 +30,6 @@ jobs:
         #   aws-region: us-east-2
       - name: Test API
         run: |
-          aws configure $(python utilities/setter_key.py)
+          aws configure <<< "$(python utilities/setter_key.py)"
           dvc pull model/model.pkl -r model-tracker
           pytest tests.py
