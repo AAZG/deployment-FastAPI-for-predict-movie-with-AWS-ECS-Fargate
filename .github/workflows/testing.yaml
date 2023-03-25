@@ -1,5 +1,5 @@
 name: Testing API
-on: [push, pull_request]
+on: [push, pull_request_target]
 
 permissions:
   id-token: write
