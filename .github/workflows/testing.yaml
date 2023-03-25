@@ -29,8 +29,8 @@ jobs:
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE || github.token }}
+          aws-region: ${{ secrets.AWS_REGION || github.token }}
       - name: Test API
         run: |
           dvc pull model/model.pkl -r model-tracker
