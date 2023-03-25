@@ -27,7 +27,7 @@ jobs:
         with:
           aws-access-key-id: $(python utilities/setter_id.py)
           aws-secret-access-key: $(python utilities/setter_key.py)
-          aws-region: eu-west-1
+          aws-region: us-east-2
       - name: Test API
         run: |
           dvc pull model/model.pkl -r model-tracker
