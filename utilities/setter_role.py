@@ -1,8 +1,8 @@
 import os
 
 def main():
-    region = os.environ.get('AWS_REGION')
-    print(region)
+    role = os.environ.get('AWS_IAM_ROLE')
+    print(role)
 
 if __name__ == '__main__':
     main()
