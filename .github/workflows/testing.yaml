@@ -30,6 +30,8 @@ jobs:
           pip install -r requirements_test.txt
           export AWS_IAM_ROLE=$(python utilities/setter_role.py)
           export AWS_REGION=$(python utilities/setter_region.py)
+          echo $AWS_REGION
+          echo $AWS_IAM_ROLE
       # Recomendacion para usar variables de entorno en memoria:
       # https://securitylab.github.com/research/github-actions-untrusted-input/#:~:text=variable%20de%20entorno-,intermedia,-%3A
       - name: Set AWS credentials
