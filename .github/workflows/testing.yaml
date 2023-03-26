@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - workflow_testing_api
-# These permissions are needed to interact with GitHub's OIDC Token endpoint.
 permissions:
   id-token: write # need this for OIDC  
   contents: read
@@ -15,20 +14,20 @@ jobs:
   testing-api:
     name: Testing-api in Github Actions
     runs-on: ubuntu-latest
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
       - name: Set AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-session-name: aws_testing_session
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Creating and activating environment with pipenv
+      - name: Creating and activating pipenv
         run: |
           pip install pipenv
           pipenv install
-        # This step activates the virtual environment, it was used as an alternative since pipenv shell generated an error
           pipenv run python
       - name: Installing dependencies
         run: |
