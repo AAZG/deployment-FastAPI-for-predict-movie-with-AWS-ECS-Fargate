@@ -28,7 +28,6 @@ jobs:
         run: |
           pip install pipenv
           pipenv install
-        # This step activates the virtual environment, it was used as an alternative since pipenv shell generated an error
           pipenv run python
       - name: Installing dependencies
         run: |
