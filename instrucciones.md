@@ -18,13 +18,12 @@ dvc add dataset/finantials.csv
 dvc add dataset/opening_gross.csv
 dvc add dataset/movies.csv
 dvc add model/model.pkl
-
 ## paso 2
 dvc push dataset/finantials.csv -r dataset-track
 dvc push dataset/opening_gross.csv -r dataset-track
 dvc push dataset/movies.csv -r dataset-track
 dvc push model/model.pkl -r model-track
-
+## Recordar no agregar full_data.csc aun no correspondde
 
 # Ramas creadas
 git branch
@@ -72,3 +71,7 @@ git push --all origin
 
 # Crear IAM roles en AWS para los repositorios
 https://www.youtube.com/watch?v=HEOU6o-Eazs
+## Arreglar rol luego del video
+https://github.com/aws-actions/configure-aws-credentials/issues/318
+## Usar secretos
+usar secretos de action, no el dependabot
