@@ -29,6 +29,7 @@ jobs:
           pip install pipenv
           pipenv install
           pipenv run python
+        # This step activates the virtual environment, it was used as an alternative since pipenv shell generated an error
       - name: Installing dependencies
         run: |
           pip install dvc[s3]
