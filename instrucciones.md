@@ -33,7 +33,7 @@ git checkout -b continuous_training_pipeline
 git checkout -b testing_api
 git checkout -b creating_dockerfile
 git checkout -b workflow_testing_api
-
+git checkout -b workflow_continuous_training
 
 # Install
 pip install -r requirements.txt
@@ -75,3 +75,9 @@ https://www.youtube.com/watch?v=HEOU6o-Eazs
 https://github.com/aws-actions/configure-aws-credentials/issues/318
 ## Usar secretos
 usar secretos de action, no el dependabot
+
+
+# Solucion al problema de certificados al hacer push desde Ubuntu WSL2
+sudo apt-get install --reinstall ca-certificates
+sudo update-ca-certificates
+https://stackoverflow.com/questions/35821245/github-server-certificate-verification-failed

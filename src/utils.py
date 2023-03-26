@@ -11,14 +11,14 @@ def update_model(model: Pipeline) -> None:
 def save_simple_metrics_report(cross_validate_train_score: float, cross_validate_test_score: float, grid_search_test_score: float, model: Pipeline) -> None:
     with open('report.txt', 'w') as report_file:
 
-        report_file.write('# Model Pipeline Description')
+        report_file.write('# Model Pipeline Description' + '\n')
 
         for key, value in model.named_steps.items():
-            report_file.write(f'### {key}:{value.__repr__()}'+'\n')
+            report_file.write(f'### {key}:{value.__repr__()}' + '\n')
 
-        report_file.write(f'### Cross Validating Train Score: {cross_validate_train_score}'+'\n')
-        report_file.write(f'### Cross Validating Test Score: {cross_validate_test_score}'+'\n')
-        report_file.write(f'### Grid Search Test Score: {grid_search_test_score}'+'\n')
+        report_file.write(f'### Cross Validating Train Score: {cross_validate_train_score}' + '\n')
+        report_file.write(f'### Cross Validating Test Score: {cross_validate_test_score}' + '\n')
+        report_file.write(f'### Grid Search Test Score: {grid_search_test_score}' + '\n')
 
 def get_model_performance_test_set(y_real: pd.Series, y_pred: pd.Series) ->None:
     fig, ax = plt.subplots(figsize=(8, 8))
