@@ -34,10 +34,10 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Train model
         run: |
+          python -m pip install --upgrade pip
           pip install pipenv
           pipenv install
           pipenv run python
-          python -m pip install --upgrade pip
           pip install -r src/requirements.txt
           dvc pull model/model.pkl.dvc -r model-tracker
           dvc unprotect model/model.pkl

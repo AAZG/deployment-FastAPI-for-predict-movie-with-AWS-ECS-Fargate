@@ -102,10 +102,10 @@ jobs:
 
       - name: Set environment and bring the model
         run: |
+          python -m pip install --upgrade pip
           pip install pipenv
           pipenv install
           pipenv run python
-          python -m pip install --upgrade pip
           pip install dvc[s3]
           dvc pull model/model.pkl.dvc -r model-tracker
 
@@ -116,7 +116,7 @@ jobs:
           docker build -t $ECR_REPOSITORY .
           docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+        # echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest"
 
 
 
