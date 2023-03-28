@@ -1,0 +1,176 @@
+# name: Continuous Integration/Continuous Deployment
+# on: 
+#   push:
+#      branches:
+#       - main 
+#   workflow_run:
+#     workflows: ["Continuous Training"]
+#     branches: [main]
+#     types:
+#       - completed
+#   workflow_dispatch:
+#     inputs:
+#       reason:
+#         description: Why to run this?
+#         required: false
+#         default: running CI/CD
+# jobs:
+#   ci_cd:
+#     runs-on: ubuntu-latest
+#     env:
+#       REGISTRY_NAME: ${{ secrets.REGISTRY_NAME }}
+#       REGION: ${{ secrets.REGION }}
+#       PROJECT_ID: ${{ secrets.PROJECT_ID }}
+#       SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+#       # SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+#     steps:
+#       - name: Checkout Repo
+#         uses: actions/checkout@v2
+#       - name: Set environment and bring the model
+#         run: |
+#           pip3 install virtualenv
+#           virtualenv venv
+#           source venv/bin/activate
+#           pip install dvc[gs]
+#           export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
+#           dvc pull model/model.pkl.dvc -r model-tracker
+#       - name: Set up GCLOUD SDK
+#         uses: google-github-actions/setup-gcloud@master
+#         with:
+#           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+#           project_id: ${{ secrets.PROJECT_ID }}
+#       - name: Build and Push
+#         run: |
+#           docker build . -t $REGISTRY_NAME:$GITHUB_SHA
+#           gcloud auth configure-docker -q
+#           sudo -u $USER docker push $REGISTRY_NAME:$GITHUB_SHA
+#       - name: Deploy to Cloud Run
+#         run: |
+#           gcloud run services update $SERVICE_NAME --region=$REGION --image=$REGISTRY_NAME:$GITHUB_SHA
+
+
+
+
+
+
+
+
+
+
+
+
+
+name: Continuous Integration/Continuous Deployment
+on:[push] 
+  # push:
+  #    branches:
+  #     - main 
+  # workflow_run:
+  #   workflows: ["Continuous Training"]
+  #   branches: [main]
+  #   types:
+  #     - completed
+  # workflow_dispatch:
+  #   inputs:
+  #     reason:
+  #       description: Why to run this?
+  #       required: false
+  #       default: running CI/CD
+# These permissions are needed to interact with GitHub's OIDC Token endpoint.
+permissions:
+  id-token: write # need this for OIDC  
+  contents: write
+  pull-requests: write 
+  issues: read
+  packages: none
+env:
+  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}         # set this to your Amazon ECR registry
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}     # set this to your Amazon ECR repository name
+jobs:
+  ci_cd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-session-name: aws_testing_session
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set environment and bring the model
+        run: |
+          pip install pipenv
+          pipenv install
+          pipenv run python
+          pip install dvc[s3]
+          dvc pull model/model.pkl.dvc -r model-tracker
+
+      - name: Login to Amazon ECR and build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username ${{ secrets.AWS_USERNAME_ECR }} --password-stdin $ECR_REGISTRY
+          docker build -t $ECR_REPOSITORY .
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+
+
+
+
+
+
+      #   ECS_CLUSTER: MY_ECS_CLUSTER                 # set this to your Amazon ECS cluster name
+      #   ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
+      #                                               # file, e.g. .aws/task-definition.json
+      #   CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
+      #                                               # containerDefinitions section of your task definition
+
+
+
+
+
+
+      # # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+
+      # - name: Download task definition
+      #   run: |
+      #     aws ecs describe-task-definition --task-definition service \
+      #     --query taskDefinition > task-definition.json
+
+      # - name: Fill in the new image ID in the Amazon ECS task definition
+      #   id: task-def
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #   with:
+      #     task-definition: task-definition.json
+      #     container-name: application
+      #     image: ${{ steps.build-image.outputs.image }}
+
+      # - name: Deploy Amazon ECS task definition
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      #   with:
+      #     task-definition: ${{ steps.task-def.outputs.task-definition }}
+      #     service: ${{ secrets.ECS_SERVICE }}
+      #     cluster: ${{ secrets.ECS_CLUSTER }}
+      #     wait-for-service-stability: true
+
+      
+      # - name: Set up GCLOUD SDK
+      #   uses: google-github-actions/setup-gcloud@master
+      #   with:
+      #     service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+      #     project_id: ${{ secrets.PROJECT_ID }}
+      # - name: Build and Push
+      #   run: |
+      #     docker build . -t $REGISTRY_NAME:$GITHUB_SHA
+      #     gcloud auth configure-docker -q
+      #     sudo -u $USER docker push $REGISTRY_NAME:$GITHUB_SHA
+      # - name: Deploy to Cloud Run
+      #   run: |
+      #     gcloud run services update $SERVICE_NAME --region=$REGION --image=$REGISTRY_NAME:$GITHUB_SHA

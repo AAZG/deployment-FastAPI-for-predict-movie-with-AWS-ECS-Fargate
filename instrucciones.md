@@ -34,6 +34,8 @@ git checkout -b testing_api
 git checkout -b creating_dockerfile
 git checkout -b workflow_testing_api
 git checkout -b workflow_continuous_training
+git checkout -b workflow_CI_CD
+
 
 # Install
 pip install -r requirements.txt
