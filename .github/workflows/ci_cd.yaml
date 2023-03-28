@@ -96,7 +96,7 @@ jobs:
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-session-name: aws_testing_session
+          role-session-name: aws_CI_CD_session
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}
 
@@ -105,6 +105,7 @@ jobs:
           pip install pipenv
           pipenv install
           pipenv run python
+          python -m pip install --upgrade pip
           pip install dvc[s3]
           dvc pull model/model.pkl.dvc -r model-tracker
 
