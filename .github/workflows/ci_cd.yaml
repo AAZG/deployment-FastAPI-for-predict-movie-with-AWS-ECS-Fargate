@@ -89,9 +89,6 @@ env:
 jobs:
   ci_cd:
     runs-on: ubuntu-latest
-    environment:
-      ECS_CLUSTER: curse-mlops-cluster
-      ECS_SERVICE: curse_mlops_service
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
