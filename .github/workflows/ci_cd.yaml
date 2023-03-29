@@ -89,6 +89,9 @@ env:
 jobs:
   ci_cd:
     runs-on: ubuntu-latest
+    environment:
+      ECS_CLUSTER: curse-mlops-cluster
+      ECS_SERVICE: curse_mlops_service
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -113,17 +116,42 @@ jobs:
           pip install dvc[s3]
           dvc pull model/model.pkl.dvc -r model-tracker
 
-      - name: Login to Amazon ECR and build, tag, and push image to Amazon ECR
+      - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REPOSITORY .
-          docker tag $ECR_REPOSITORY:IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Download task definition
+      run: |
+        aws ecs describe-task-definition --task-definition ${{ secrets.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ secrets.ECS_CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ secrets.ECS_SERVICE }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+          
         # echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:IMAGE_TAG"
         # aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username ${{ secrets.AWS_USERNAME_ECR }} --password-stdin $ECR_REGISTRY
-
+        # docker build -t $ECR_REPOSITORY .
+        # docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
           # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

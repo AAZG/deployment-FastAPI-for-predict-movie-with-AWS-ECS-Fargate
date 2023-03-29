@@ -83,3 +83,7 @@ usar secretos de action, no el dependabot
 sudo apt-get install --reinstall ca-certificates
 sudo update-ca-certificates
 https://stackoverflow.com/questions/35821245/github-server-certificate-verification-failed
+
+
+# Flujo CI/CD 
+https://www.youtube.com/watch?v=UQnJyLnfbgw&list=PLWQmZVQayUUI5RinDqpoIXiRYWy5YZKjs&index=7
