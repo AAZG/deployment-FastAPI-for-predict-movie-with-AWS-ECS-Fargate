@@ -6,6 +6,8 @@ COPY api/requirements.txt .
 
 RUN python -m pip install --upgrade pip
 
+ENV PIP_ROOT_USER_ACTION=ignore
+
 RUN pip install -U pip && pip install -r requirements.txt
 
 COPY api/ ./api
