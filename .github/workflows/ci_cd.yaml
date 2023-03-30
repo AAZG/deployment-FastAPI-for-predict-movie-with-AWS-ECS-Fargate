@@ -1,59 +1,27 @@
-# name: Continuous Integration/Continuous Deployment
-# on: 
-#   push:
-#      branches:
-#       - main 
-#   workflow_run:
-#     workflows: ["Continuous Training"]
-#     branches: [main]
-#     types:
-#       - completed
-#   workflow_dispatch:
-#     inputs:
-#       reason:
-#         description: Why to run this?
-#         required: false
-#         default: running CI/CD
-# jobs:
-#   ci_cd:
-#     runs-on: ubuntu-latest
-#     env:
-#       REGISTRY_NAME: ${{ secrets.REGISTRY_NAME }}
-#       REGION: ${{ secrets.REGION }}
-#       PROJECT_ID: ${{ secrets.PROJECT_ID }}
-#       SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
-#       # SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-#     steps:
-#       - name: Checkout Repo
-#         uses: actions/checkout@v2
-#       - name: Set environment and bring the model
-#         run: |
-#           pip3 install virtualenv
-#           virtualenv venv
-#           source venv/bin/activate
-#           pip install dvc[gs]
-#           export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
-#           dvc pull model/model.pkl.dvc -r model-tracker
-#       - name: Set up GCLOUD SDK
-#         uses: google-github-actions/setup-gcloud@master
-#         with:
-#           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-#           project_id: ${{ secrets.PROJECT_ID }}
-#       - name: Build and Push
-#         run: |
-#           docker build . -t $REGISTRY_NAME:$GITHUB_SHA
-#           gcloud auth configure-docker -q
-#           sudo -u $USER docker push $REGISTRY_NAME:$GITHUB_SHA
-#       - name: Deploy to Cloud Run
-#         run: |
-#           gcloud run services update $SERVICE_NAME --region=$REGION --image=$REGISTRY_NAME:$GITHUB_SHA
-
-
-
-
-
-
-
+# This workflow will build and push a new container image to Amazon ECR,
+# and then will deploy a new task definition to Amazon ECS, when a release is created
+#
+# To use this workflow, you will need to complete the following set-up steps:
+#
+# 1. Create an ECR repository to store your images.
+#    For example: `aws ecr create-repository --repository-name my-ecr-repo --region us-east-2`.
+#    Replace the value of `ECR_REPOSITORY` in the workflow below with your repository's name.
+#    Replace the value of `aws-region` in the workflow below with your repository's region.
+#
+# 2. Create an ECS task definition, an ECS cluster, and an ECS service.
+#    For example, follow the Getting Started guide on the ECS console:
+#      https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2#/firstRun
+#    Replace the values for `service` and `cluster` in the workflow below with your service and cluster names.
+#
+# 3. Store your ECS task definition as a JSON file in your repository.
+#    The format should follow the output of `aws ecs register-task-definition --generate-cli-skeleton`.
+#    Replace the value of `task-definition` in the workflow below with your JSON file's name.
+#    Replace the value of `container-name` in the workflow below with the name of the container
+#    in the `containerDefinitions` section of the task definition.
+#
+# 4. Store an IAM user access key in GitHub Actions secrets named `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+#    See the documentation for each action used below for the recommended IAM policies for this IAM user,
+#    and best practices on handling the access key credentials.
 
 
 
@@ -120,10 +88,12 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-        # echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           
       - name: Download task definition
         run: |
@@ -138,20 +108,18 @@ jobs:
             )' > task-definition.json
           
       - name: Render Amazon ECS task definition
-        id: render-FastAPI-container
+        id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ./task-definition.json
+          task-definition: task-definition.json
           container-name: ${{ secrets.ECS_CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
-          environment-variables: "LOG_LEVEL=info"
-        # container-name: fastapi-app
-        # image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        # environment-variables: "LOG_LEVEL=info"
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-FastAPI-container.outputs.task-definition }}
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
           service: ${{ secrets.ECS_SERVICE }}
           cluster: ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true

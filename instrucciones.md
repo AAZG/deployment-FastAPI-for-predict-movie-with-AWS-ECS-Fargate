@@ -93,9 +93,38 @@ https://www.youtube.com/watch?v=UQnJyLnfbgw&list=PLWQmZVQayUUI5RinDqpoIXiRYWy5YZ
 
 # Documentation of IAM Permisos requeridos to CI/CD AWS FARGATE
 ## Permisor:
-- AmazonECS_FullAccess: Este permiso lo agrego ya que no me permitia el paso (Deploy Amazon ECS task definition)
+- AmazonECS_FullAccess: Este permiso lo agregue ya que no me permitia el paso (Deploy Amazon ECS task definition)
+- AmazonS3FullAccess: Este permiso lo agregue para tener acceso al S3 que defini
+- Me parece bien, que partiendo de estos dos, permisor, ir contruyendo mi proxima flujo con un proyecto de clasificacion, y probar en definitiva, cueal otro permiso requiero, pero posiblemente falte el del task y ECR
+
+
+# Documentation Actions secrets and variables
+- AWS_IAM_ROLE:
+Aqui va el ARN de tu Rol usar.
+- AWS_REGION:
+Aqui se recomienda usar una sola ubicacion por ejemplo(us-east-2 o us-east-1), el rol no tiene ubicacion ya que es global, asi que estar pendiente al cambiar de esta ventana a otras ya que puede cambiar a la primera que es us-east-1, y confundirte en la creacion de todo lo demas. 
+
+- ECR_REGISTRY:
+Este es un valor que proviene de la union del ID de tu cuenta, la region usada para loguear y un link web de ECR. Por lo tanto, puede ser obtenido del paso en que logueamos ECR (metodo usado) o simplemente colocandolo con codigo duro.
+
+- ECR_REPOSITORY:
+Este es el nombre del repositorio ECR que creamos.
+
+- ECS_CLUSTER:
+Nombre del cluster
+
+- ECS_CONTAINER_NAME:
+nombre que le dimos al contenedor al crear la tarea
+
+- ECS_SERVICE:
+nombre del servicio
+
+- ECS_TASK_DEFINITION:
+Definición de tarea mas su revisión
+ejemplo: tarea-ejemplo:1 tarea-ejemplo:2
 
 
 
-
-# Documentation
+# Readme documentadion of project
+copiar un poco de aca:
+https://github.com/ahmednkhan24/AWS-ECS-Pipeline
