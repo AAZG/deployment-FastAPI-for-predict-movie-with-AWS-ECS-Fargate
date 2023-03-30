@@ -87,3 +87,15 @@ https://stackoverflow.com/questions/35821245/github-server-certificate-verificat
 
 # Flujo CI/CD 
 https://www.youtube.com/watch?v=UQnJyLnfbgw&list=PLWQmZVQayUUI5RinDqpoIXiRYWy5YZKjs&index=7
+
+
+
+
+# Documentation of IAM Permisos requeridos to CI/CD AWS FARGATE
+## Permisor:
+- AmazonECS_FullAccess: Este permiso lo agrego ya que no me permitia el paso (Deploy Amazon ECS task definition)
+
+
+
+
+# Documentation
