@@ -26,6 +26,7 @@
 
 name: Continuous Integration/Continuous Deployment
 # on: [push]
+on:
   push:
      branches:
       - main 
