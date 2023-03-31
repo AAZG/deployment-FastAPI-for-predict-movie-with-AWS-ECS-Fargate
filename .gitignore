@@ -8,3 +8,4 @@ report.txt
 __pycache__/
 .env.testing
 *.env
+!AWS_Fargate_Workflow.png
