@@ -1,0 +1,122 @@
+# This workflow will create and push a new container image to Amazon ECR,
+# and then deploy a new task definition to Amazon ECS, when a version is created
+#
+# To use this workflow, you will need to complete the following configuration steps:
+#
+#1. Create an ECR repository to store your images.
+# For example: `aws ecr create-repository --repository-name my-ecr-repo --region us-east-2`.
+# Replace the value of `ECR_REPOSITORY` in the workflow below with the name of your repository.
+# Replace the value of `aws-region` in the following workflow with the region of your repository.
+#
+#2. Create an ECS Task Definition, an ECS Cluster, and an ECS Service.
+# For example, follow the getting started guide in the ECS console:
+# https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2#/firstRun
+# Replace the values of `service` and `cluster` in the workflow below with the names of your service and cluster.
+#
+#3. Save your ECS task definition as a JSON file in your repository or proceed to download it with the flow used.
+# The format should follow the output of `aws ecs register-task-definition --generate-cli-skeleton`.
+# Replace the value of `task-definition` in the workflow below with the name of your JSON file.
+# Replace the value of `container-name` in the workflow below with the name of the container
+# in the `containerDefinitions` section of the task definition.
+#
+# 4. Store an IAM user access key in the GitHub Actions secrets named `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+# See the documentation for each action used below for the recommended IAM policies for this IAM user.
+# and best practices on handling of access key credentials.
+
+
+name: Continuous Integration/Continuous Deployment
+# on: [push]
+on:
+  push:
+     branches:
+      - main 
+  workflow_run:
+    workflows: ["Continuous Training"]
+    branches: [main]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why to run this?
+        required: false
+        default: running CI/CD
+# These permissions are needed to interact with GitHub's OIDC Token endpoint.
+permissions:
+  id-token: write # need this for OIDC  
+  contents: write
+  pull-requests: write 
+  issues: read
+  packages: none
+env:
+  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}         # set this to your Amazon ECR registry
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}     # set this to your Amazon ECR repository name
+jobs:
+  ci_cd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-session-name: aws_CI_CD_session
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set environment and bring the model
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install
+          pipenv run python
+          pip install dvc[s3]
+          dvc pull model/model.pkl.dvc -r model-tracker
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+      - name: Download task definition
+        run: |
+            aws ecs describe-task-definition --task-definition ${{ secrets.ECS_TASK_DEFINITION }} --query taskDefinition | jq -r 'del(
+              .taskDefinitionArn,
+              .requiresAttributes,
+              .compatibilities,
+              .revision,
+              .status,
+              .registeredAt,
+              .registeredBy
+            )' > task-definition.json
+          
+      - name: Render Amazon ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ secrets.ECS_CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+          environment-variables: "LOG_LEVEL=info"
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ secrets.ECS_SERVICE }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
+          wait-for-service-stability: true

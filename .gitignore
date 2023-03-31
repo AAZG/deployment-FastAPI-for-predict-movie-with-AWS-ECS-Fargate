@@ -1,0 +1,11 @@
+*.json
+*.csv
+*.pkl
+ven/
+.ipynb_checkpoints/
+report.txt
+*.png
+__pycache__/
+.env.testing
+*.env
+!AWS_Fargate_Workflow.png

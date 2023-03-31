@@ -1,0 +1,22 @@
+Tomamos 3 muestras aleatorias con la misma seed para hacer un test del modelo en FastAPI 
+ 
+# input dict: 
+Sample number: 1904
+{"opening_gross": -0.5625420469407975, "screens": -0.04602719622269299, "production_budget": -0.8555381933931706, "title_year": -0.21759131293030326, "aspect_ratio": -1.2536853385188789, "duration": -1.8562182823324764, "cast_total_facebook_likes": -1.2981992568521172, "budget": -0.148513562426072, "imdb_score": -0.8983381964369419}
+
+Sample number: 402
+{"opening_gross": 1.0162288500026149, "screens": 0.6257366467561448, "production_budget": 0.6710339589287464, "title_year": 0.5106888340883535, "aspect_ratio": -1.2536853385188789, "duration": 0.29252428539592035, "cast_total_facebook_likes": 0.12335750038804717, "budget": 0.6014937649182905, "imdb_score": -0.8983381964369419}
+
+Sample number: 798
+{"opening_gross": -0.204070235848411, "screens": 0.2720718520157005, "production_budget": 1.4462286612410742, "title_year": 0.6945119541987584, "aspect_ratio": -1.2536853385188789, "duration": 0.6771937154413307, "cast_total_facebook_likes": -1.313758953592533, "budget": 1.3865529826041392, "imdb_score": -1.069728136935526}
+
+# output dict: 
+Sample number: 1904
+{"worldwide_gross": -1.1735851052698358}
+
+Sample number: 402
+{"worldwide_gross": 0.6888172710099637}
+
+Sample number: 798
+{"worldwide_gross": -0.243833820653718}
+
