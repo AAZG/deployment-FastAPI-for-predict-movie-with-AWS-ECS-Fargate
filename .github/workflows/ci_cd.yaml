@@ -114,7 +114,7 @@ jobs:
           task-definition: task-definition.json
           container-name: ${{ secrets.ECS_CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
-        # environment-variables: "LOG_LEVEL=info"
+        environment-variables: "LOG_LEVEL=info"
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
