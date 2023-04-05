@@ -26,21 +26,21 @@
 
 name: Continuous Integration/Continuous Deployment
 # on: [push]
-on:
-  push:
-     branches:
-      - main 
-  workflow_run:
-    workflows: ["Continuous Training"]
-    branches: [main]
-    types:
-      - completed
-  workflow_dispatch:
-    inputs:
-      reason:
-        description: Why to run this?
-        required: false
-        default: running CI/CD
+# on:
+#   push:
+#      branches:
+#       - main 
+#   workflow_run:
+#     workflows: ["Continuous Training"]
+#     branches: [main]
+#     types:
+#       - completed
+#   workflow_dispatch:
+#     inputs:
+#       reason:
+#         description: Why to run this?
+#         required: false
+#         default: running CI/CD
 # These permissions are needed to interact with GitHub's OIDC Token endpoint.
 permissions:
   id-token: write # need this for OIDC  
