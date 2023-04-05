@@ -2,6 +2,7 @@
 ![AWS_Fargate_Workflow](./images/AWS_Fargate_Workflow.png)
 
 ## Application deployed [here](http://fna-alb-855649282.us-east-2.elb.amazonaws.com)
+![API_inline](./images/API_inline.png)
 
 ## Setup AWS Instance
 * Sign up / create account at https://aws.amazon.com/
