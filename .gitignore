@@ -9,3 +9,4 @@ __pycache__/
 .env.testing
 *.env
 !AWS_Fargate_Workflow.png
+!API_inline.png
